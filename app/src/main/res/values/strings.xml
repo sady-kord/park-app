@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Parkban</string>
+
+    <string name="user_name">نام کاربری</string>
+    <string name="password">کلمه عبور</string>
+    <string name="parking_space">جایگاه های پارک</string>
+    <string name="unknown">نامشخص</string>
+
+
+    <!--Messages-->
+    <string name="exception_msg">بروز خطا</string>
+    <string name="connection_failed">عدم برقراری ارتباط با سرور</string>
+    <string name="unhandled_error_from_server">یک خطای غیر منتظره در سمت سرور اتفاق افتاده است</string>
+    <string name="save_success">ذخیره اطلاعات با موفقیت انجام شد </string>
+    <string name="save_failed">ذخیره اطلاعات با مشکل مواجه شد \n لطفا دوباره نسبت به ذخیره اطلاعات اقدام نمایید</string>
+    <string name="plate_not_detected">تشخیص پلاک با موفقیت انجام نشد \n لطفا مجددا نسبت به ثبت تصویر اقدام نمایید</string>
+    <string name="not_detect">پلاکی جهت شناسایی تشخیص داده نشده است</string>
+    <string name="parking_space_busy">جایگاه انتخابی قبلا اشغال شده است \n آیا از انتخاب آن اطمینان دارید</string>
+    <string name="space_not_selected">جایگاه پارک موردنظر را انتخاب نمایید</string>
+    <string name="fake_location">موقعیت یافت شده معتبر نمی باشد</string>
+
+
+</resources>

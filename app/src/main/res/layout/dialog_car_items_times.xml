@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <com.eos.parkban.controls.PersianTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="تاریخچه تصاویر ثبت شده"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_marginTop="5dp"
+        android:textSize="16sp"
+        android:textColor="@color/colorPrimary"/>
+
+    <ListView
+        android:id="@+id/list_item"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:layout_marginTop="10dp"
+        android:divider="@null"/>
+
+</LinearLayout>

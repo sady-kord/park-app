@@ -3,14 +3,19 @@ package com.eos.parkban.dialogs;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.eos.parkban.LoginActivity;
 import com.eos.parkban.R;
+import com.eos.parkban.helper.ShowToast;
 
 public class GPSDialog extends DialogFragment {
 
@@ -32,6 +37,7 @@ public class GPSDialog extends DialogFragment {
         confirmLayout = view.findViewById(R.id.confirm);
         cancelLayout = view.findViewById(R.id.cancel);
 
+        Log.i("------------------>>>", "in gps dialog ");
         confirmLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -46,12 +52,24 @@ public class GPSDialog extends DialogFragment {
         cancelLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-              dismiss();
+                dismiss();
             }
         });
 
+        alertDialog.setCanceledOnTouchOutside(false);
+
         return alertDialog;
+    }
+
+    @Override
+    public void show(FragmentManager manager, String tag) {
+        try {
+            FragmentTransaction ft = manager.beginTransaction();
+            ft.add(this, tag);
+            ft.commit();
+        } catch (IllegalStateException e) {
+            Log.d("--------------->>>>", "Exception", e);
+        }
     }
 
 }

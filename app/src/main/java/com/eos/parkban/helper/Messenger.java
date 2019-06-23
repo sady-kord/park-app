@@ -92,8 +92,8 @@ public class Messenger {
         else if (responseCode == ResponseResultType.UserIsDeactive.getValue()){
             showErrorMessage(context,ResponseResultType.UserIsDeactive.getDescription());
         }
-        else if (responseCode == ResponseResultType.NotExistAnyData.getValue()){
-            showInfoMessage(context,ResponseResultType.NotExistAnyData.getDescription());
+        else if (responseCode == ResponseResultType.CreditIsNotEnough.getValue()){
+            showErrorMessage(context,ResponseResultType.CreditIsNotEnough.getDescription());
         }
         else if (responseCode == ResponseResultType.Fail.getValue()){
             showErrorMessage(context,R.string.unhandled_error_from_server);

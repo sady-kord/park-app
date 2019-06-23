@@ -1,6 +1,5 @@
 package com.eos.parkban.services.dto;
 
-import com.eos.parkban.persistence.models.ParkingSpace;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -27,7 +26,7 @@ public class LoginResultDto extends ResultDto {
         private String token;
 
         @SerializedName("OtherValues")
-        private List<ParkingSpace> parkingSpaces;
+        private List<ParkingSpaceDto> parkingSpaces;
 
         private String userName;
 
@@ -65,11 +64,11 @@ public class LoginResultDto extends ResultDto {
             this.password = password;
         }
 
-        public List<ParkingSpace> getParkingSpaces() {
+        public List<ParkingSpaceDto> getParkingSpaces() {
             return parkingSpaces;
         }
 
-        public void setParkingSpaces(List<ParkingSpace> parkingSpaces) {
+        public void setParkingSpaces(List<ParkingSpaceDto> parkingSpaces) {
             this.parkingSpaces = parkingSpaces;
         }
     }

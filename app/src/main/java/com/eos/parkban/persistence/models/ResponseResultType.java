@@ -25,7 +25,7 @@ public enum ResponseResultType {
     DuplicateData(21,"اطلاعات ورودی تکراری می باشد"),
     CanNotPermissionToService(22,"عدم دسترسی مجاز به سرویس دهنده"),
     UnauthorizedUser(23,"کاربر غیر مجاز"),
-    NotExistAnyData(24,"اطلاعاتی برای نمایش وجود ندارد"),
+    CreditIsNotEnough(24,"اعتبار شما کافی نمی باشد"),
     LockOfMobkartHaveError(25,"بازبینی قفل با خطا مواجه شد"),
     RetrofitError(100, "خطای ارتباط"),
     ServerError(101, "خطای سرور");

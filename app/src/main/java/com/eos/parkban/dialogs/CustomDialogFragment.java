@@ -5,9 +5,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.os.Bundle;
-import android.os.Messenger;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -16,10 +17,9 @@ import android.widget.TextView;
 
 import com.eos.parkban.R;
 import com.eos.parkban.adapters.DialogAdapter;
-import com.eos.parkban.adapters.DialogAdapterTimes;
+import com.eos.parkban.core.anpr.helpers.RidingType;
 import com.eos.parkban.helper.ShowToast;
-import com.eos.parkban.persistence.models.ParkingSpace;
-import com.eos.parkban.persistence.models.ParkingSpaceStatus;
+import com.eos.parkban.services.dto.ParkingSpaceDto;
 import com.eos.parkban.repositories.ParkbanRepository;
 import com.eos.parkban.viewmodels.RecordPlateViewModel;
 
@@ -31,8 +31,8 @@ public class CustomDialogFragment<T> extends DialogFragment {
     ListView listView;
     SearchView auto_complete_text;
     RelativeLayout searchLayout;
-    TextView part1, part2, part3, part4, titleDialog;
-    LinearLayout cameraClick, saveClick;
+    TextView part1, part2, part3, part4, titleDialog ,  mPart1 , mPart2;
+    LinearLayout cameraClick, saveClick , carLayout , motorLayout;
 
     private ArrayList<T> uiEntities;
     private ArrayList<T> arrayList;
@@ -40,11 +40,15 @@ public class CustomDialogFragment<T> extends DialogFragment {
     private DialogAdapter dialogAdapter;
     private List<String> list;
     DialogOnItemSelectedListener dialogOnItemSelectedListener;
-    private String p1, p2, p3, p4;
+    private String p1, p2, p3, p4 ;
     private T itemSelected;
     private RecordPlateViewModel plateViewModel;
     private Activity context;
     private ParkbanRepository parkbanRepository;
+    private List<Long> parkSpaceFull;
+    private DialogCallBack callBack;
+    private RidingType ridingType;
+    private Dialog alertDialog;
 
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -53,6 +57,7 @@ public class CustomDialogFragment<T> extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_fragment, null);
         builder.setView(view);
+        alertDialog = builder.create();
 
         auto_complete_text = view.findViewById(R.id.auto_complete_text);
         listView = view.findViewById(R.id.list_item);
@@ -66,6 +71,11 @@ public class CustomDialogFragment<T> extends DialogFragment {
         part4 = view.findViewById(R.id.part4);
         part4.setText(p4);
 
+        mPart1 = view.findViewById(R.id.m_part1);
+        mPart2 = view.findViewById(R.id.m_part2);
+        mPart1.setText(p1);
+        mPart2.setText(p2);
+
         saveClick = view.findViewById(R.id.saveClick);
         saveClick.setOnClickListener(saveClick());
 
@@ -74,6 +84,17 @@ public class CustomDialogFragment<T> extends DialogFragment {
 
         titleDialog = view.findViewById(R.id.dialog_title);
         titleDialog.setText(title);
+
+        carLayout = view.findViewById(R.id.car_layout);
+        motorLayout = view.findViewById(R.id.motor_layout);
+
+        if (ridingType == RidingType.CAR) {
+            carLayout.setVisibility(View.VISIBLE);
+            motorLayout.setVisibility(View.GONE);
+        }else{
+            motorLayout.setVisibility(View.VISIBLE);
+            carLayout.setVisibility(View.GONE);
+        }
 
         dialogAdapter = new DialogAdapter(uiEntities, getActivity());
 
@@ -109,14 +130,13 @@ public class CustomDialogFragment<T> extends DialogFragment {
                     dialogOnItemSelectedListener.OnItemSelected(uiEntities.get(position));
                 itemSelected = uiEntities.get(position);
 
-
-                //dismiss();
             }
         });
 
         listView.setAdapter(dialogAdapter);
 
-        return builder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+        return alertDialog;
     }
 
     private View.OnClickListener cameraClick() {
@@ -134,34 +154,8 @@ public class CustomDialogFragment<T> extends DialogFragment {
             @Override
             public void onClick(View v) {
                 if (itemSelected != null) {
+                    callBack.onCallBack(itemSelected);
                     dismiss();
-
-//                    parkbanRepository.getCarByPlaceId(((ParkingSpace) itemSelected).getId(), new ParkbanRepository.DataBaseBooleanCallBack() {
-//                        @Override
-//                        public void onSuccess(boolean exit) {
-//                            if (exit) {
-//                                final ConfirmMessageDialog dialog = new ConfirmMessageDialog();
-//                                dialog.setCallBack(new ConfirmMessageDialog.DialogCallBack() {
-//                                    @Override
-//                                    public void onCallBack(boolean confirm) {
-//                                        if (confirm) {
-//                                            dialog.dismiss();
-//                                            dismiss();
-//                                        }
-//                                    }
-//                                });
-//                            } else {
-//                               dismiss();
-//                            }
-//
-//                        }
-//
-//                        @Override
-//                        public void onFailed() {
-//
-//                        }
-//                    });
-
                 } else {
                     ShowToast.getInstance().showWarning(v.getContext(),R.string.space_not_selected);
                     return;
@@ -171,10 +165,11 @@ public class CustomDialogFragment<T> extends DialogFragment {
     }
 
     public CustomDialogFragment setItems(final ArrayList<T> uiEntities, int title, String part1,
-                                         String part2, String part3, String part4, RecordPlateViewModel plateViewModel, ParkbanRepository parkbanRepository, final DialogOnItemSelectedListener dialogOnItemSelectedListener) {
+                                         String part2, String part3, String part4, RecordPlateViewModel plateViewModel,
+                                         ParkbanRepository parkbanRepository , RidingType ridingType) {
+        this.ridingType = ridingType;
         this.uiEntities = (ArrayList<T>) uiEntities.clone();
         this.title = title;
-        this.dialogOnItemSelectedListener = dialogOnItemSelectedListener;
         this.plateViewModel = plateViewModel;
         this.parkbanRepository = parkbanRepository;
         p1 = part1;
@@ -182,13 +177,15 @@ public class CustomDialogFragment<T> extends DialogFragment {
         p3 = part3;
         p4 = part4;
 
+        Log.i("=====================<", "Dialoggggggggggggggggg " );
+
         arrayList = new ArrayList<>();
         arrayList.addAll(uiEntities);
 
         list = new ArrayList<>();
         for (T u : uiEntities) {
-            if (u instanceof ParkingSpace) {
-                list.add(((ParkingSpace) u).getName());
+            if (u instanceof ParkingSpaceDto) {
+                list.add(((ParkingSpaceDto) u).getName());
             }
         }
         return this;
@@ -197,4 +194,14 @@ public class CustomDialogFragment<T> extends DialogFragment {
     public interface DialogOnItemSelectedListener {
         void OnItemSelected(Object selectedItem);
     }
+
+    public void setCallBack(DialogCallBack callBack) {
+        this.callBack = callBack;
+    }
+
+    public interface DialogCallBack {
+        void onCallBack(Object selectedItem);
+    }
+
+
 }

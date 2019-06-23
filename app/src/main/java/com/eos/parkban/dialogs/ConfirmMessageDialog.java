@@ -3,21 +3,26 @@ package com.eos.parkban.dialogs;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.LinearLayout;
 
 import com.eos.parkban.R;
+import com.eos.parkban.controls.PersianTextView;
 
 public class ConfirmMessageDialog extends DialogFragment {
 
-    LinearLayout confirmLayout, cancelLayout;
+    public static String CONFIRM = "confirm";
+    public static String CANCEL = "cancel";
+
+    LinearLayout confirmLayout, cancelLayout ;
+    PersianTextView messageTextView;
+
     private Activity context;
     private Dialog alertDialog;
     private DialogCallBack callBack;
+    private String message;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -32,22 +37,32 @@ public class ConfirmMessageDialog extends DialogFragment {
         confirmLayout = view.findViewById(R.id.confirm);
         cancelLayout = view.findViewById(R.id.cancel);
 
+        messageTextView = view.findViewById(R.id.message);
+        messageTextView.setText(message);
+
         confirmLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                callBack.onCallBack(true);
+                alertDialog.dismiss();
+                callBack.onCallBack( CONFIRM);
             }
         });
 
         cancelLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                dismiss();
+                alertDialog.dismiss();
+                callBack.onCallBack(CANCEL);
             }
         });
 
+        alertDialog.setCanceledOnTouchOutside(false);
+
         return alertDialog;
+    }
+
+    public void setMessage(String msg){
+        message = msg;
     }
 
     public void setCallBack(DialogCallBack callBack) {
@@ -55,6 +70,6 @@ public class ConfirmMessageDialog extends DialogFragment {
     }
 
     public interface DialogCallBack {
-        void onCallBack(boolean confirm);
+        void onCallBack( String state);
     }
 }

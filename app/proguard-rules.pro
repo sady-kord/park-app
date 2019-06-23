@@ -19,3 +19,21 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-dontwarn okio.**
+-dontwarn retrofit2.**
+-keep class retrofit.http.** { *; }
+-dontwarn javax.annotation.**
+-keep public class * extends android.support.v7.app.ActionBarActivity
+-keep public class * extends com.eos.parkban
+-keep class android.support.v7.** { *; }
+-keep interface android.support.v7.** { *; }
+-dontwarn okhttp3.internal.platform.*
+
+-keep class com.google.gson.** { *; }
+-keepclassmembers enum * { *; }
+
+#-keepclassmembers class * extends java.lang.Enum {
+#    <fields>;
+#    public static **[] values();
+#    public static ** valueOf(java.lang.String);
+#}

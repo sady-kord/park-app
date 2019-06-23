@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +42,9 @@ public class PlateListAdapter extends RecyclerView.Adapter<PlateListAdapter.Plat
 
     public void setCarList(List<Car> items) {
         this.carList.clear();
-        carList.addAll(items);
+        if (items != null)
+            carList.addAll(items);
+
         notifyDataSetChanged();
     }
 
@@ -66,10 +69,10 @@ public class PlateListAdapter extends RecyclerView.Adapter<PlateListAdapter.Plat
             PlateListViewModel plateListViewModel = ViewModelProviders.of((BaseActivity) itemView.getContext()).get(PlateListViewModel.class);
 
             binding.setViewModel(plateListViewModel);
+
         }
 
         public void setCar(Car car) {
-
             if (car.getPlateNo() != null)
                 binding.setCarItem(new CarItems(itemView.getContext(), car));
         }

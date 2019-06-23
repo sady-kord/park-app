@@ -1,27 +1,14 @@
 package com.eos.parkban;
 
-import android.app.Activity;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.graphics.Bitmap;
-import android.provider.ContactsContract;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 
-import com.eos.parkban.adapters.PlateListAdapter;
 import com.eos.parkban.databinding.ActivityListPlatesBinding;
-import com.eos.parkban.dialogs.RecordsStatusDialog;
-import com.eos.parkban.helper.GPSTracker;
-import com.eos.parkban.helper.ImageLoadHelper;
-import com.eos.parkban.persistence.ParkbanDatabase;
-import com.eos.parkban.persistence.models.Car;
 import com.eos.parkban.viewmodels.PlateListViewModel;
-
-import java.io.Serializable;
-import java.util.List;
 
 public class ListPlatesActivity extends BaseActivity {
 
@@ -36,11 +23,53 @@ public class ListPlatesActivity extends BaseActivity {
         plateListViewModel = ViewModelProviders.of(this).get(PlateListViewModel.class);
 
         binding.setViewModel(plateListViewModel);
-
         plateListViewModel.init(this);
 
+        binding.setLifecycleOwner(this);
+
+        plateListViewModel.getProgress().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(@Nullable Integer value) {
+                if (value > 0) {
+                    showProgress(true);
+                } else {
+                    showProgress(false);
+                }
+            }
+        });
+
+        plateListViewModel.getCurrent().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable Boolean isSelected) {
+
+                binding.currentLayout.setBackgroundColor(isSelected
+                        ? ListPlatesActivity.this.getResources().getColor(R.color.colorPrimary)
+                        : ListPlatesActivity.this.getResources().getColor(R.color.light_grey));
+            }
+        });
+
+        plateListViewModel.getPrevious().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable Boolean isSelected) {
+
+                binding.previousLayout.setBackgroundColor(isSelected
+                        ? ListPlatesActivity.this.getResources().getColor(R.color.colorPrimary)
+                        : ListPlatesActivity.this.getResources().getColor(R.color.light_grey));
+            }
+        });
+
+    }
+    public void setFragmentCars(Fragment fragment){
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(binding.frameLayout.getId(),fragment)
+                .commit();
     }
 
-
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        plateListViewModel.onResume();
+        plateListViewModel.getCurrentCarFromDB(this);
+    }
 }

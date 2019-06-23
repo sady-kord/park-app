@@ -2,6 +2,9 @@ package com.eos.parkban.controls;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ScaleDrawable;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.widget.EditText;
 
@@ -46,6 +49,27 @@ public class PersianEditText extends EditText {
         if (!isEnglishDigit && !isInEditMode())
             setTypeface(FontHelper.getInstance(context).getPersianTextTypeface());
     }
+
+    public Drawable setUserIcon(Context context, String type) {
+        Drawable drawable;
+        if (type == "user")
+            drawable = ContextCompat.getDrawable(context, R.mipmap.avatar);
+        else
+            drawable = ContextCompat.getDrawable(context, R.mipmap.pass);
+        drawable.setBounds(0, 0, (int) (drawable.getIntrinsicWidth() * 0.5),
+                (int) (drawable.getIntrinsicHeight() * 0.5));
+        ScaleDrawable sd = new ScaleDrawable(drawable, 0, 20, 20);
+        return sd.getDrawable();
+    }
+
+    public Drawable setPassIcon(Context context) {
+        Drawable drawable = ContextCompat.getDrawable(context, R.mipmap.pass);
+        drawable.setBounds(0, 0, (int) (drawable.getIntrinsicWidth() * 0.5),
+                (int) (drawable.getIntrinsicHeight() * 0.5));
+        ScaleDrawable sd = new ScaleDrawable(drawable, 0, 20, 20);
+        return sd.getDrawable();
+    }
+
 
 }
 

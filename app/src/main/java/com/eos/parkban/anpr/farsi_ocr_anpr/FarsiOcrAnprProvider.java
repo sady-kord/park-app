@@ -6,9 +6,12 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.eos.parkban.core.anpr.BaseAnprProvider;
 import com.eos.parkban.core.anpr.helpers.PlateDetectionState;
+import com.eos.parkban.core.anpr.helpers.RidingType;
 import com.eos.parkban.core.anpr.onPlateDetectedCallback;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -18,39 +21,43 @@ import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+
+import ir.shahaabco.ANPRNDK;
+
+import static ir.shahaabco.ANPRNDK.anpr_about;
+import static ir.shahaabco.ANPRNDK.anpr_create;
+import static ir.shahaabco.ANPRNDK.anpr_recognize_mat;
+import static ir.shahaabco.ANPRNDK.anpr_set_params;
 
 public class FarsiOcrAnprProvider implements BaseAnprProvider {
 
     private static final String TAG = "ANPR-CAM";
-
     private Mat plateMat;
-    private ANPR anpr1;
     private Context context;
+    private ANPRNDK.SPlate p;
+    private RidingType ridingType;
 
     public FarsiOcrAnprProvider(final Context context) {
 
         this.context = context;
 
+        File dir = context.getExternalFilesDir(null);
+        String mcs_path = dir.getPath();
+
         openCVLoader();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    anpr1 = new ANPR(context);
-                    anpr1.Initialize("ParkbanEos");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+        short result = anpr_create((byte) 0, mcs_path, "09361392929", (byte) 0);
+//        if (result >= 0)
+//            Toast.makeText(context, "ANPR Lib Initialized Correctly", Toast.LENGTH_SHORT).show();
+//        else {
+//            Toast.makeText(context, "ANPR Lib FAILED to Load", Toast.LENGTH_LONG).show();
+//        }
     }
 
     private void openCVLoader() {
+
+        System.loadLibrary("anpr_ndk");
+
         if (!OpenCVLoader.initDebug()) {
             Log.d(TAG, "Internal OpenCV library not found. Using OpenCV Manager for initialization");
             OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, context, mLoaderCallback);
@@ -58,6 +65,26 @@ public class FarsiOcrAnprProvider implements BaseAnprProvider {
         } else {
             Log.d(TAG, "OpenCV library found inside package. Using it!");
             mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        }
+    }
+
+    private boolean checkValidInt(String s) {
+        try {
+            Integer.parseInt(s);
+            return true;
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private boolean checkRidingType(String s) {
+        try {
+            Integer.parseInt(s);
+            return true;
+
+        } catch (Exception e) {
+            return false;
         }
     }
 
@@ -89,40 +116,86 @@ public class FarsiOcrAnprProvider implements BaseAnprProvider {
 
         new AsyncTask<Void, Void, String>() {
 
-            private ANPR.Result result;
-            private String p0, p1, p2, p3;
+            String part0 = "";
+            String part1 = "";
+            String part2 = "";
+            String part3 = "";
 
             @Override
             protected String doInBackground(Void... results) {
-                Utils.bitmapToMat(plateImage, plateMat);
-                result = anpr1.Recognize(plateMat, null);
-                return null;
+                try {
+                    Utils.bitmapToMat(plateImage, plateMat);
+
+                    short resize_thresh = 500;
+                    anpr_set_params((byte) 0, (byte) 8, (byte) 0, (byte) 1, resize_thresh);
+                    p = anpr_recognize_mat(plateMat);
+                    while ((p.str_fa.length() < 8) && resize_thresh < 1500) {
+                        resize_thresh += 500;
+                        anpr_set_params((byte) 0, (byte) 8, (byte) 0, (byte) 1, resize_thresh);
+                        ANPRNDK.SPlate p2 = anpr_recognize_mat(plateMat);
+                        if (p2.cnf[0] > p.cnf[0])
+                            p = p2;
+                    }
+
+                    return p.str_fa;
+                } catch (Exception e) {
+                    return "";
+                }
             }
 
             @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
 
-                if (result.str.length() > 0) {
-                    if (result.str.length() >= 2)
-                        p0 = result.str.substring(0, Math.min(2, result.str.length()));
-                    if (result.str.length() >= 3)
-                        p1 = result.str.substring(2, Math.min(3, result.str.length()));
-                    if (result.str.length() >= 4)
-                        p2 = result.str.substring(3, Math.min(6, result.str.length()));
-                    if (result.str.length() > 6)
-                        p3 = result.str.substring(6, Math.min(8, result.str.length()));
+                String plate = "";
 
-                    String plate = p0 + p1 + p2 + p3;
+                if (checkRidingType(s))
+                    ridingType = RidingType.MOTORCYCLE;
+                else
+                    ridingType = RidingType.CAR;
 
-                    callback.onPlateDetected(PlateDetectionState.DETECTED, plate, plateImage , p0 , p1 , p2 , p3);
-
+                if (p.cnf[0] < 0.6) {
+                    callback.onPlateDetected(PlateDetectionState.NOT_FOUND, ridingType, "", plateImage, part0, part1, part2, part3);
                 } else {
-                    callback.onPlateDetected(PlateDetectionState.NOT_FOUND, "", plateImage, p0 , p1 , p2 , p3);
-                }
+                    if (s.length() > 0 && s.length() == 8) {
 
+                        if (ridingType == RidingType.CAR) {
+                            if (
+                                    checkValidInt(s.substring(0, Math.min(2, s.length())))
+                                            && !checkValidInt(s.substring(2, Math.min(3, s.length())))
+                                            && checkValidInt(s.substring(3, Math.min(6, s.length())))
+                                            && checkValidInt(s.substring(6, Math.min(8, s.length())))
+                                            && s.substring(0, Math.min(2, s.length())).length() == 2
+                                            && s.substring(3, Math.min(6, s.length())).length() == 3
+                                            && s.substring(6, Math.min(8, s.length())).length() == 2) {
+
+                                part0 = s.substring(0, Math.min(2, s.length()));
+                                part1 = s.substring(2, Math.min(3, s.length()));
+                                if ((s.substring(2, Math.min(3, s.length())).equals("ا"))) {
+                                    part1 = "الف";
+                                }
+                                if ((s.substring(2, Math.min(3, s.length())).equals("ژ")))
+                                    part1 = "♿";
+
+                                part2 = s.substring(3, Math.min(6, s.length()));
+                                part3 = s.substring(6, Math.min(8, s.length()));
+
+                                plate = part0 + part1 + part2 + part3;
+
+                                callback.onPlateDetected(PlateDetectionState.DETECTED, ridingType, plate, plateImage, part0, part1, part2, part3);
+                            } else {
+                                callback.onPlateDetected(PlateDetectionState.NOT_FOUND, ridingType, plate, plateImage, part0, part1, part2, part3);
+                            }
+                        } else if (ridingType == RidingType.MOTORCYCLE) {
+                            callback.onPlateDetected(PlateDetectionState.DETECTED, ridingType, s, plateImage, part0, part1, part2, part3);
+                        }
+                    } else {
+                        callback.onPlateDetected(PlateDetectionState.NOT_FOUND, ridingType, plate, plateImage, part0, part1, part2, part3);
+                    }
+                }
             }
         }.execute();
+
 
     }
 }

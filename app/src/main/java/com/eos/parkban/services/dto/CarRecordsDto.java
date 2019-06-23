@@ -22,7 +22,8 @@ public class CarRecordsDto {
     @Expose
     private double latitude ;
 
-    private double parkId ;
+    @SerializedName("parkId")
+    private long parkId ;
 
     @SerializedName("CarPlate")
     @Expose
@@ -34,7 +35,7 @@ public class CarRecordsDto {
 
     @SerializedName("DataRow")
     @Expose
-    private int[] imageByteArray;
+    private int[] imageIntArray;
 
     @SerializedName("ParkDateTime")
     @Expose
@@ -48,7 +49,23 @@ public class CarRecordsDto {
     @Expose
     private long parkingSpaceId;
 
-//    @SerializedName("CarParkDetails")
+    @SerializedName("DriverPhoneNumber")
+    @Expose
+    private long driverPhoneNumber ;
+
+    @SerializedName("VerificationStatus")
+    @Expose
+    private int verificationStatus ;
+
+    public long getDriverPhoneNumber() {
+        return driverPhoneNumber;
+    }
+
+    public void setDriverPhoneNumber(long driverPhoneNumber) {
+        this.driverPhoneNumber = driverPhoneNumber;
+    }
+
+    //    @SerializedName("CarParkDetails")
 //    @Expose
 //    private ArrayList<CarDetailDto> carDetailList;
 
@@ -94,20 +111,20 @@ public class CarRecordsDto {
 //        this.carDetailList = carDetailList;
 //    }
 
-    public double getParkId() {
+    public long getParkId() {
         return parkId;
     }
 
-    public void setParkId(double parkId) {
+    public void setParkId(long parkId) {
         this.parkId = parkId;
     }
 
-    public int[] getImageByteArray() {
-        return imageByteArray;
+    public int[] getImageIntArray() {
+        return imageIntArray;
     }
 
-    public void setImageByteArray(int[] imageByteArray) {
-        this.imageByteArray = imageByteArray;
+    public void setImageIntArray(int[] imageIntArray) {
+        this.imageIntArray = imageIntArray;
     }
 
     public Date getDateTime() {
@@ -140,5 +157,13 @@ public class CarRecordsDto {
 
     public void setParkingSpaceId(long parkingSpaceId) {
         this.parkingSpaceId = parkingSpaceId;
+    }
+
+    public int getVerificationStatus() {
+        return verificationStatus;
+    }
+
+    public void setVerificationStatus(int verificationStatus) {
+        this.verificationStatus = verificationStatus;
     }
 }

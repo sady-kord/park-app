@@ -1,14 +1,22 @@
 package com.eos.parkban.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.eos.parkban.R;
-import com.eos.parkban.persistence.models.ParkingSpace;
+import com.eos.parkban.helper.FontHelper;
+import com.eos.parkban.persistence.models.ChargeAmount;
+import com.eos.parkban.persistence.models.ParkingSpaceStatus;
+import com.eos.parkban.services.dto.ParkingSpaceDto;
+import com.eos.parkban.services.dto.WorkShiftTypes;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -19,6 +27,7 @@ public class DialogAdapter<T> extends BaseAdapter {
     private List<T> list;
     private ArrayList<T> arrayList;
     private String trim;
+    private NumberFormat formatter = new DecimalFormat("#,###");
 
     public DialogAdapter(List<T> uiEntities, Context context) {
         this._context = context;
@@ -53,6 +62,7 @@ public class DialogAdapter<T> extends BaseAdapter {
             // configure view holder
             viewHolder = new ViewHolder();
             viewHolder.text = rowView.findViewById(R.id.item);
+            viewHolder.carImageView = rowView.findViewById(R.id.carImage);
 
             rowView.setTag(viewHolder);
 
@@ -62,10 +72,31 @@ public class DialogAdapter<T> extends BaseAdapter {
 
         T u = list.get(position);
 
-        if (u instanceof ParkingSpace)
-            viewHolder.text.setText(((ParkingSpace) u).getName());
+        if (u instanceof ParkingSpaceDto) {
+            viewHolder.text.setText(((ParkingSpaceDto) u).getName());
+//            if (((ParkingSpaceDto) u).getSpaceStatus() == ParkingSpaceStatus.FULL) {
+//                viewHolder.carImageView.setVisibility(View.VISIBLE);
+//                Log.i("------------a----------", "park name " + ((ParkingSpaceDto) u).getName());
+//                Log.i("------------a----------", "parkFull id " + ((ParkingSpaceDto) u).getId());
+//            }else
+//                viewHolder.carImageView.setVisibility(View.GONE);
+            viewHolder.carImageView.setVisibility(((ParkingSpaceDto) u).getSpaceStatus() == ParkingSpaceStatus.FULL ? View.VISIBLE :  View.GONE);
+
+            Log.i("------------a----------", "park name " + ((ParkingSpaceDto) u).getName());
+            Log.i("------------a----------", "parkFull status " + ((ParkingSpaceDto) u).getSpaceStatus());
+            Log.i("------------a----------", "parkFull id " + ((ParkingSpaceDto) u).getId());
+        }
         else if (u instanceof String)
             viewHolder.text.setText(((String) u));
+
+        else if (u instanceof WorkShiftTypes) {
+            viewHolder.text.setText(((WorkShiftTypes) u).getDescription());
+            viewHolder.carImageView.setVisibility(View.GONE);
+        }
+        else if (u instanceof ChargeAmount) {
+            viewHolder.text.setText(formatter.format(((ChargeAmount) u).getValue()));
+            viewHolder.carImageView.setVisibility(View.GONE);
+        }
 
         return rowView;
     }
@@ -80,9 +111,11 @@ public class DialogAdapter<T> extends BaseAdapter {
 
         } else {
             for (T postDetail : arrayList) {
-                    if (charText.length() != 0 && ((ParkingSpace) postDetail).getName().trim().toLowerCase(Locale.getDefault()).contains(charText)) {
+                    if (charText.length() != 0 && ((ParkingSpaceDto) postDetail).getName().trim().toLowerCase(Locale.getDefault()).contains(charText) ||
+                            FontHelper.toPersianNumber(((ParkingSpaceDto) postDetail).getName().trim()).contains(charText)) {
                         list.add(postDetail);
-                    } else if (charText.length() != 0 && ((ParkingSpace) postDetail).getName().trim().toLowerCase(Locale.getDefault()).contains(charText)) {
+                    } else if (charText.length() != 0 && ((ParkingSpaceDto) postDetail).getName().trim().toLowerCase(Locale.getDefault()).contains(charText) ||
+                            FontHelper.toPersianNumber(((ParkingSpaceDto) postDetail).getName().trim()).contains(charText)) {
                         list.add(postDetail);
                     }
             }
@@ -92,5 +125,6 @@ public class DialogAdapter<T> extends BaseAdapter {
 
     class ViewHolder {
         TextView text;
+        ImageView carImageView;
     }
 }

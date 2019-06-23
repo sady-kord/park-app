@@ -12,7 +12,8 @@ import java.sql.Date;
 public class CarPlate {
 
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    @ColumnInfo(name = "id")
+    private long id;
 
     @ForeignKey(entity = Car.class, parentColumns = "id", childColumns = "car_id")
     @ColumnInfo(name = "car_id")
@@ -27,10 +28,17 @@ public class CarPlate {
     @ColumnInfo(name = "record_date")
     private Date recordDate;
 
+    @ColumnInfo(name = "status")
     private int status;
 
     @ColumnInfo(name = "is_exit")
     private boolean isExit;
+
+    @ColumnInfo(name="exit_by_system")
+    private boolean exitBySystem;
+
+    @ColumnInfo(name= "edited_plate")
+    private int editedPlate;
 
     @Ignore
     private String plateNumber;
@@ -50,7 +58,6 @@ public class CarPlate {
     @Ignore
     private String part3;
 
-
     @Ignore
     private double latitude;
 
@@ -59,6 +66,9 @@ public class CarPlate {
 
     @Ignore
     private long parkingSpaceId;
+
+    @Ignore
+    private long firstDate;
 
 
     public CarPlate() {
@@ -137,11 +147,11 @@ public class CarPlate {
         this.plateFileName = plateFileName;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -200,4 +210,30 @@ public class CarPlate {
     public void setParkingSpaceId(long parkingSpaceId) {
         this.parkingSpaceId = parkingSpaceId;
     }
+
+    public boolean isExitBySystem() {
+        return exitBySystem;
+    }
+
+    public void setExitBySystem(boolean exitBySystem) {
+        this.exitBySystem = exitBySystem;
+    }
+
+    public long getFirstDate() {
+        return firstDate;
+    }
+
+    public void setFirstDate(long firstDate) {
+        this.firstDate = firstDate;
+    }
+
+    public int getEditedPlate() {
+        return editedPlate;
+    }
+
+    public void setEditedPlate(int editedPlate) {
+        this.editedPlate = editedPlate;
+    }
+
+
 }

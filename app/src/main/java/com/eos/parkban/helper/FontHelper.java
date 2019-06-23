@@ -3,16 +3,20 @@ package com.eos.parkban.helper;
 import android.content.Context;
 import android.graphics.Typeface;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 public class FontHelper {
     private static FontHelper instance;
     private static Typeface persianTypeface;
-
+    private static NumberFormat formatter = new DecimalFormat("#,###");
+    
     private FontHelper(Context context) {
         persianTypeface = Typeface.createFromAsset(context.getAssets(), "Font/irsans.ttf");
     }
 
-    public static synchronized FontHelper getInstance(Context context){
-        if (instance == null){
+    public static synchronized FontHelper getInstance(Context context) {
+        if (instance == null) {
             instance = new FontHelper(context);
         }
         return instance;
@@ -52,7 +56,7 @@ public class FontHelper {
         for (int i = 0; i < length; i++) {
             char c = text.charAt(i);
             if (1176 <= c && c <= 1785) {
-                int number = (c-1776);
+                int number = (c - 1776);
                 out += number;
             } else if (c == '٫') {
                 out += '،';
@@ -64,11 +68,28 @@ public class FontHelper {
         return out;
     }
 
-    public static String RemoveAllSpaceAndEnterAndTab(String str){
-        return str.replace(" ","").replace("\t", "").replace("\n", "").trim();
+    public static String RemoveAllSpaceAndEnterAndTab(String str) {
+        return str.replace(" ", "").replace("\t", "").replace("\n", "").trim();
     }
 
-    public static String removeEnter(String str){
-        return str.replace("\n","");
+    public static String removeEnter(String str) {
+        return str.replace("\n", "");
+    }
+
+    public static String convertArabicToPersian(String text) {
+        if (text.isEmpty())
+            return "";
+
+        return text.replace("ي", "ی").replace("ك", "ک");
+    }
+
+    public static String IntegerFormat(int value) {
+        DecimalFormat formatter = new DecimalFormat("00");
+        return formatter.format(value);
+    }
+
+    public static String RialFormatter(long price) {
+
+        return formatter.format(price);
     }
 }

@@ -8,6 +8,8 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.eos.parkban.R;
+
 public class BindingAdapters {
 
     @BindingAdapter("image_src")
@@ -15,7 +17,7 @@ public class BindingAdapters {
         imageView.setImageBitmap(imageBitmap);
     }
 
-    @BindingAdapter("data_adapter")
+    @BindingAdapter("app:data_adapter")
     public static void setRecyclerViewBindingAdapter(RecyclerView recyclerView, RecyclerView.Adapter adapter) {
         recyclerView.setAdapter(adapter);
         recyclerView.setNestedScrollingEnabled(false);
@@ -26,5 +28,20 @@ public class BindingAdapters {
         view.setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 
+    @BindingAdapter("circle_back")
+    public static void setBackground(View view, boolean allSend) {
+        if (allSend)
+            view.setBackground(view.getContext().getResources().getDrawable(R.drawable.circle_text_green));
+        else
+            view.setBackground(view.getContext().getResources().getDrawable(R.drawable.circle_text_view));
+    }
+
+    @BindingAdapter("save_color")
+    public static void setBackgroundColor(View view, boolean status) {
+        if (status)
+            view.setBackgroundColor(view.getContext().getResources().getColor(R.color.colorPrimary));
+        else
+            view.setBackgroundColor(view.getContext().getResources().getColor(R.color.light_grey));
+    }
 
 }

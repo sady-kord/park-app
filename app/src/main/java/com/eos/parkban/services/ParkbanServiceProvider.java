@@ -2,6 +2,8 @@ package com.eos.parkban.services;
 
 import android.text.TextUtils;
 
+import com.eos.parkban.helper.FontHelper;
+
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -15,7 +17,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ParkbanServiceProvider {
 
     private static final String HEADER_TOKEN = "UserToken";
-    private static final String BASE_URL = "http://tehranmobsrv.parkometer.ir/api/";
+
+    public static final String BASE_URL = "http://192.168.10.142:5555/api/";
 
     private static ParkbanService instance;
     private static String userToken;
@@ -62,7 +65,6 @@ public class ParkbanServiceProvider {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(ParkbanService.class);
-
     }
 
     public static void setUserToken(String userToken) {

@@ -31,4 +31,20 @@
         <item name="colorControlActivated">@color/light_grey</item>
     </style>
 
+    <style name="spinner_style">
+        <item name="android:dropDownWidth">60dp</item>
+        <item name="android:showDividers">beginning</item>
+        <!--<item name="android:dropDownHeight">70dp</item>-->
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:scrollbarAlwaysDrawVerticalTrack">true</item>
+        <item name="android:dropDownSelector">@color/colorPrimary</item>
+
+    </style>
+
+    <style name="MyDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorPrimary">@color/colorPrimary</item>
+    </style>
+
+
 </resources>

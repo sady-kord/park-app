@@ -27,6 +27,22 @@
             android:background="@color/white"
             android:orientation="vertical">
 
+            <!--<com.eos.parkban.controls.LoginEditText-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--app:BTitle="@string/user_name"-->
+            <!--app:Image="@mipmap/avatar"-->
+            <!--android:layout_marginTop="@dimen/margin_all"-->
+            <!--app:BValue="@={viewModel.userName}"/>-->
+
+            <!--<com.eos.parkban.controls.LoginEditText-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--app:BTitle="@string/password"-->
+            <!--app:Image="@mipmap/pass"-->
+            <!--android:layout_marginTop="@dimen/margin_all"-->
+            <!--app:BValue="@={viewModel.password}"/>-->
+
             <com.eos.parkban.controls.PersianEditText
                 android:id="@+id/userName"
                 android:layout_width="match_parent"
@@ -34,9 +50,9 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="10dp"
-                android:drawableLeft="@drawable/user"
+                android:drawableStart="@drawable/avatar"
                 android:hint="@string/user_name"
-                android:text="@={viewModel.userName}"
+                android:text="@={viewModel.user.userName}"
                 android:textColorHint="@color/light_grey"
                 android:textDirection="rtl"
                 android:textSize="16sp" />
@@ -48,22 +64,96 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="10dp"
-                android:drawableLeft="@drawable/lock"
+                android:digits="abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#$%\'()*+€£¥×÷,-./\:;=?@[]_`{};|~^"
+                android:drawableLeft="@drawable/pass"
                 android:hint="@string/password"
+                android:inputType="textPassword"
+                android:text="@={viewModel.user.password}"
                 android:textColorHint="@color/light_grey"
                 android:textDirection="rtl"
-                android:textSize="16sp"
-                android:text="@={viewModel.password}"/>
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_below="@+id/plate_layout"
+                android:layout_marginTop="@dimen/margin_normal"
+                android:background="@color/white"
+                android:gravity="right"
+                android:orientation="horizontal">
+
+                <com.eos.parkban.controls.PersianTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_marginRight="5dp"
+                    android:text="@string/remember_password"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/text_size" />
+
+                <CheckBox
+                    android:id="@+id/remember_password"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="5dp"
+                    android:checked="@{viewModel.rememberPassword}"
+                    android:gravity="center"
+                    android:onClick="@{viewModel::getRememberPassStatus}"
+                    android:scaleX="1.2"
+                    android:scaleY="1.2"
+                    android:theme="@style/CustomCheckBox" />
+
+            </LinearLayout>
 
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
-                android:layout_marginTop="25dp"
+                android:layout_marginTop="20dp"
                 android:background="@color/colorPrimary"
                 android:onClick="@{viewModel::loginClick}"
                 android:text="ورود"
                 android:textColor="@color/white"
                 android:textSize="17sp" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/colorPrimary" />
+
+        <LinearLayout
+            android:layout_width="90dp"
+            android:layout_height="25dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="12dp"
+            android:background="@color/colorPrimaryDark"
+            android:orientation="horizontal">
+
+            <com.eos.parkban.controls.PersianTextView
+                android:id="@+id/version"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@{viewModel.version}"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+            <com.eos.parkban.controls.PersianTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="نسخه "
+                android:textColor="@color/white"
+                android:textSize="13sp" />
 
         </LinearLayout>
 

@@ -7,14 +7,11 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.eos.parkban.R;
-import com.eos.parkban.persistence.models.Car;
-import com.eos.parkban.persistence.models.CarItems;
 import com.eos.parkban.persistence.models.CarPlateHistory;
-import com.eos.parkban.persistence.models.ParkingSpace;
+import com.eos.parkban.services.dto.ParkingSpaceDto;
 import com.eos.parkban.persistence.models.SendStatus;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class DialogAdapterTimes<T> extends BaseAdapter {
@@ -69,9 +66,10 @@ public class DialogAdapterTimes<T> extends BaseAdapter {
 
         if (u instanceof CarPlateHistory) {
             viewHolder.text.setText(((CarPlateHistory) u).getTime());
-            if (((CarPlateHistory) u).getStatus() == SendStatus.PENDING.ordinal())
+            if (((CarPlateHistory) u).getStatus() == SendStatus.PENDING.ordinal() || ((CarPlateHistory) u).getStatus() == SendStatus.IsSENDING.ordinal()) {
                 viewHolder.state.setText("رکورد جدید");
-            if (((CarPlateHistory) u).getStatus() == SendStatus.SENT.ordinal()) {
+                viewHolder.state.setTextColor(_context.getResources().getColor(R.color.text_color));
+            }if (((CarPlateHistory) u).getStatus() == SendStatus.SENT.ordinal()) {
                 viewHolder.state.setText("ارسال موفق");
                 viewHolder.state.setTextColor(_context.getResources().getColor(R.color.green));
             }
@@ -79,8 +77,8 @@ public class DialogAdapterTimes<T> extends BaseAdapter {
                 viewHolder.state.setText("ارسال ناموفق");
                 viewHolder.state.setTextColor(_context.getResources().getColor(R.color.red));
             }
-        }else if (u instanceof ParkingSpace)
-            viewHolder.text.setText(((ParkingSpace) u).getName());
+        }else if (u instanceof ParkingSpaceDto)
+            viewHolder.text.setText(((ParkingSpaceDto) u).getName());
 
 
         return rowView;

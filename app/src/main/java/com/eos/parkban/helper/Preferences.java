@@ -7,6 +7,10 @@ public class Preferences {
 
     private static String User_Name = "username";
     private static String Password = "password";
+    private static String First = "First";
+    private static String StatusSend = "StatusSend";
+    private static String LastTime = "LastTime";
+    private static String Remember_Password = "rememberPassword";
 
     private static SharedPreferences preferences;
 
@@ -48,5 +52,56 @@ public class Preferences {
         return (userName != null && !userName.isEmpty())
                 ? userName
                 : "";
+    }
+
+    public static void setFirstLogin(Boolean first, Context context){
+        getSharedPreferences(context).edit()
+                .putBoolean(First, first)
+                .apply();
+    }
+
+    public static Boolean getFirstLogin( Context context){
+        SharedPreferences pref = getSharedPreferences(context);
+
+        Boolean first = pref.getBoolean(First,false);
+
+        return first;
+    }
+
+    public static void setManualSending(boolean status, Context context) {
+        getSharedPreferences(context).edit()
+                .putBoolean(StatusSend, status)
+                .apply();
+    }
+
+    public static boolean getManualSending(Context context) {
+
+        SharedPreferences pref = getSharedPreferences(context);
+        return pref.getBoolean(StatusSend,false);
+    }
+
+    public static boolean getRememberCheck(Context context){
+
+        SharedPreferences pref = getSharedPreferences(context);
+        Boolean check = pref.getBoolean(Remember_Password,false);
+
+        return check;
+    }
+
+    public static void setRememberCheck(boolean check , Context context){
+        getSharedPreferences(context).edit()
+                .putBoolean(Remember_Password, check)
+                .apply();
+    }
+
+    public static void setLastTime(long time, Context context) {
+        getSharedPreferences(context).edit()
+                .putLong(LastTime, time)
+                .apply();
+    }
+
+    public static long getLastTime(Context context) {
+        SharedPreferences pref = getSharedPreferences(context);
+        return pref.getLong(LastTime,0);
     }
 }

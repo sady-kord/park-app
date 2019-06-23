@@ -15,10 +15,17 @@
         android:textSize="16sp"
         android:textColor="@color/colorPrimary"/>
 
+    <ImageView
+        android:id="@+id/car_image"
+        android:layout_width="130dp"
+        android:layout_height="120dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/margin_5"/>
+
     <ListView
         android:id="@+id/list_item"
         android:layout_width="match_parent"
-        android:layout_height="350dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:divider="@null"/>
 

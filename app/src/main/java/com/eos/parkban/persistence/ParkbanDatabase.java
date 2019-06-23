@@ -10,14 +10,17 @@ import android.os.AsyncTask;
 import com.eos.parkban.persistence.models.Car;
 import com.eos.parkban.persistence.models.CarPlate;
 import com.eos.parkban.persistence.models.ParkingSpace;
+import com.eos.parkban.services.dto.ParkingSpaceDto;
 
-@Database(entities = {CarPlate.class, Car.class}, version = 1, exportSchema = false)
+@Database(entities = {CarPlate.class, Car.class , ParkingSpace.class}, version = 1, exportSchema = false)
 @TypeConverters({CustomTypeConverter.class})
 public abstract class ParkbanDatabase extends RoomDatabase {
 
     public abstract CarDao getCarDao();
 
     public abstract CarPlateDao getCarPlateDao();
+
+    public abstract ParkingSpaceDao getParkingSpaceDao();
 
     private static ParkbanDatabase instance;
 

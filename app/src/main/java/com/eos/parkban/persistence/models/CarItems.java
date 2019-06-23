@@ -2,9 +2,14 @@ package com.eos.parkban.persistence.models;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Environment;
+import android.util.Log;
 
+import com.eos.parkban.anpr.farsi_ocr_anpr.FarsiOcrAnprProvider;
+import com.eos.parkban.core.anpr.helpers.RidingType;
 import com.eos.parkban.helper.DateTimeHelper;
+import com.eos.parkban.helper.FontHelper;
 import com.eos.parkban.helper.ImageLoadHelper;
 
 import java.io.File;
@@ -15,40 +20,83 @@ import java.util.List;
 
 public class CarItems {
 
-    private String part0, part1, part2, part3, carItemSize, lastTime = "" , state;
+    private String part0, part1, part2, part3, carItemSize, lastTime = "", state;
     private Bitmap imageFile;
     private List<String> timeList;
     private long carId;
+    private boolean allPlateSent = false;
+    private boolean carType = true;
 
     public CarItems(Context context, Car car) {
 
-        if (car.getPlateNo() != null) {
-            part0 = car.getPlateNo().substring(0, 2);
-            part1 = car.getPlateNo().substring(2, 3);
-            part2 = car.getPlateNo().substring(3, 6);
-            part3 = car.getPlateNo().substring(6, 8);
+        Log.i("===========****" , "CarItems ");
 
+        if (car.getPlateNo() != null) {
+            if (car.getPlateNo().length() == 10) {
+                carType = true;
+                part0 = car.getPlateNo().substring(0, 2);
+                part1 = car.getPlateNo().substring(2, 5);
+                part2 = car.getPlateNo().substring(5, 8);
+                part3 = car.getPlateNo().substring(8, 10);
+            } else {
+                if (checkRidingType(car.getPlateNo())) {
+                    carType = false;
+                    part0 = car.getPlateNo().substring(0, 3);
+                    part1 = car.getPlateNo().substring(3, car.getPlateNo().length());
+                } else {
+                    carType = true;
+                    part0 = car.getPlateNo().substring(0, 2);
+                    part1 = car.getPlateNo().substring(2, 3);
+                    part2 = car.getPlateNo().substring(3, 6);
+                    part3 = car.getPlateNo().substring(6, 8);
+                }
+            }
 
             if (car.getCarPlates().size() > 0) {
                 // String seenDate = car.getCarPlates().get(car.getCarPlates().size() - 1).getSeenDate();
                 // lastTime = DateTimeHelper.parsTime(seenDate, false);
 
-                Date date = new Date(car.getCarPlates().get(car.getCarPlates().size() - 1).getRecordDate().getTime());
+                Date date = new Date(car.getCarPlates().get(0).getRecordDate().getTime());
                 int hours = date.getHours();
                 int minutes = date.getMinutes();
 
-                lastTime = hours + ":" + minutes;
+                lastTime = FontHelper.IntegerFormat(hours) + ":" + FontHelper.IntegerFormat(minutes);
 
-                File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                File outFile = new File(storageDir, car.getCarPlates().get(car.getCarPlates().size() - 1).getPlateFileName());
-                String absolutePath = outFile.getAbsolutePath();
-                imageFile = ImageLoadHelper.getInstance().loadImage(context, absolutePath);
+//                File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+//                File outFile = new File(storageDir, car.getCarPlates().get(car.getCarPlates().size() - 1).getPlateFileName());
+//                String absolutePath = outFile.getAbsolutePath();
+//                imageFile = ImageLoadHelper.getInstance().loadImage(context, absolutePath);
+//                imageFile = Bitmap.createScaledBitmap(imageFile, 95, 95, false);
+
 
                 carItemSize = String.valueOf(car.getCarPlates().size());
+                Log.i("*************---", "carItemSize " + String.valueOf(car.getCarPlates().size()));
 
             }
 
+            int send = 0;
+            for (int i = 0; i < car.getCarPlates().size(); i++) {
+                if (car.getCarPlates().get(i).getStatus() == 1) {
+                    send++;
+                }
+
+                if (send == car.getCarPlates().size()) {
+                    allPlateSent = true;
+                } else
+                    allPlateSent = false;
+            }
+
             carId = car.getId();
+        }
+    }
+
+    private boolean checkRidingType(String s) {
+        try {
+            Integer.parseInt(s);
+            return true;
+
+        } catch (Exception e) {
+            return false;
         }
     }
 
@@ -132,5 +180,21 @@ public class CarItems {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public boolean isAllPlateSent() {
+        return allPlateSent;
+    }
+
+    public void setAllPlateSent(boolean allPlateSent) {
+        this.allPlateSent = allPlateSent;
+    }
+
+    public boolean isCarType() {
+        return carType;
+    }
+
+    public void setCarType(boolean carType) {
+        this.carType = carType;
     }
 }
